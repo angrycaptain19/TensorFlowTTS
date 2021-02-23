@@ -221,12 +221,10 @@ class CharactorMelDataset(AbstractDataset):
 
             if self.return_utt_id:
                 items = utt_id, charactor, char_length, mel, mel_length
-                if self.return_guided_attention:
-                    items = *items, g_attention
             else:
                 items = charactor, char_length, mel, mel_length
-                if self.return_guided_attention:
-                    items = *items, g_attention
+            if self.return_guided_attention:
+                items = *items, g_attention
             yield items
 
     def create(

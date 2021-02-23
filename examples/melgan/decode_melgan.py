@@ -95,12 +95,11 @@ def main():
         config = yaml.load(f, Loader=yaml.Loader)
     config.update(vars(args))
 
-    if config["format"] == "npy":
-        mel_query = "*-norm-feats.npy" if args.use_norm == 1 else "*-raw-feats.npy"
-        mel_load_fn = np.load
-    else:
+    if config["format"] != "npy":
         raise ValueError("Only npy is supported.")
 
+    mel_query = "*-norm-feats.npy" if args.use_norm == 1 else "*-raw-feats.npy"
+    mel_load_fn = np.load
     # define data-loader
     dataset = MelDataset(
         root_dir=args.rootdir,

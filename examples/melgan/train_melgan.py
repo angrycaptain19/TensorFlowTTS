@@ -524,14 +524,13 @@ def main():
     else:
         mel_length_threshold = None
 
-    if config["format"] == "npy":
-        audio_query = "*-wave.npy"
-        mel_query = "*-raw-feats.npy" if args.use_norm is False else "*-norm-feats.npy"
-        audio_load_fn = np.load
-        mel_load_fn = np.load
-    else:
+    if config["format"] != "npy":
         raise ValueError("Only npy are supported.")
 
+    audio_query = "*-wave.npy"
+    mel_query = "*-raw-feats.npy" if not args.use_norm else "*-norm-feats.npy"
+    audio_load_fn = np.load
+    mel_load_fn = np.load
     # define train/valid dataset
     train_dataset = AudioMelDataset(
         root_dir=args.train_dir,

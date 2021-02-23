@@ -201,8 +201,7 @@ class TFFastSpeech2(TFFastSpeech):
             self.postnet([mel_before, encoder_masks], training=training) + mel_before
         )
 
-        outputs = (mel_before, mel_after, duration_outputs, f0_outputs, energy_outputs)
-        return outputs
+        return mel_before, mel_after, duration_outputs, f0_outputs, energy_outputs
 
     @tf.function(
         experimental_relax_shapes=True,
@@ -288,5 +287,4 @@ class TFFastSpeech2(TFFastSpeech):
             self.postnet([mel_before, encoder_masks], training=False) + mel_before
         )
 
-        outputs = (mel_before, mel_after, duration_outputs, f0_outputs, energy_outputs)
-        return outputs
+        return mel_before, mel_after, duration_outputs, f0_outputs, energy_outputs

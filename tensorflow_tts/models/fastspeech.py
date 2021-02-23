@@ -232,12 +232,11 @@ class TFFastSpeechSelfAttention(tf.keras.layers.Layer):
         context_layer = tf.transpose(context_layer, perm=[0, 2, 1, 3])
         context_layer = tf.reshape(context_layer, (batch_size, -1, self.all_head_size))
 
-        outputs = (
+        return (
             (context_layer, attention_probs)
             if self.output_attentions
             else (context_layer,)
         )
-        return outputs
 
 
 class TFFastSpeechSelfOutput(tf.keras.layers.Layer):
@@ -326,10 +325,9 @@ class TFFastSpeechIntermediate(tf.keras.layers.Layer):
         hidden_states = self.intermediate_act_fn(hidden_states)
         hidden_states = self.conv1d_2(hidden_states)
 
-        masked_hidden_states = hidden_states * tf.cast(
+        return hidden_states * tf.cast(
             tf.expand_dims(attention_mask, 2), dtype=tf.float32
         )
-        return masked_hidden_states
 
 
 class TFFastSpeechOutput(tf.keras.layers.Layer):
@@ -763,8 +761,7 @@ class TFFastSpeech(tf.keras.Model):
             self.postnet([mel_before, encoder_masks], training=training) + mel_before
         )
 
-        outputs = (mel_before, mel_after, duration_outputs)
-        return outputs
+        return mel_before, mel_after, duration_outputs
 
     @tf.function(
         experimental_relax_shapes=True,
@@ -819,8 +816,7 @@ class TFFastSpeech(tf.keras.Model):
             self.postnet([mel_before, encoder_masks], training=False) + mel_before
         )
 
-        outputs = (mel_before, mel_after, duration_outputs)
-        return outputs
+        return mel_before, mel_after, duration_outputs
 
     @tf.function(
         experimental_relax_shapes=True,
@@ -875,5 +871,4 @@ class TFFastSpeech(tf.keras.Model):
             self.postnet([mel_before, encoder_masks], training=False) + mel_before
         )
 
-        outputs = (mel_before, mel_after, duration_outputs)
-        return outputs
+        return mel_before, mel_after, duration_outputs

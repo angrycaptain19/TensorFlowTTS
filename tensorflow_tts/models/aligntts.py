@@ -209,8 +209,11 @@ class TFFastSpeechSelfAttention(tf.keras.layers.Layer):
             context_layer, (batch_size, -1, self.all_head_size)
         )
 
-        outputs = (context_layer, attention_probs) if self.output_attentions else (context_layer,)
-        return outputs
+        return (
+            (context_layer, attention_probs)
+            if self.output_attentions
+            else (context_layer,)
+        )
 
 
 class TFFastSpeechSelfOutput(tf.keras.layers.Layer):
@@ -287,8 +290,9 @@ class TFFastSpeechIntermediate(tf.keras.layers.Layer):
         hidden_states = self.intermediate_act_fn(hidden_states)
         hidden_states = self.conv1d_2(hidden_states)
 
-        masked_hidden_states = hidden_states * tf.cast(tf.expand_dims(attention_mask, 2), dtype=tf.float32)
-        return masked_hidden_states
+        return hidden_states * tf.cast(
+            tf.expand_dims(attention_mask, 2), dtype=tf.float32
+        )
 
 
 class TFFastSpeechOutput(tf.keras.layers.Layer):
@@ -610,10 +614,9 @@ class TFMixDensity(tf.keras.layers.Layer):
         hidden_state = inputs
 
         hidden_state = self.layers(hidden_state)
-        mu_sigma = hidden_state
         # mu, log_sigma = tf.split(hidden_state, 2, axis=-1)
 
-        return mu_sigma
+        return hidden_state
 
 
 class TFAlignTTS(tf.keras.Model):
@@ -658,8 +661,7 @@ class TFAlignTTS(tf.keras.Model):
         mu = self.mu_predictor(last_encoder_hidden_states)
         sigma = self.sigma_predictor(last_encoder_hidden_states)
         mu_sigma = tf.concat([mu, sigma], axis=-1)
-        outputs = (None, None, None, mu_sigma)
-        return outputs
+        return None, None, None, mu_sigma
 
     # def inference(self,
     #               input_ids,

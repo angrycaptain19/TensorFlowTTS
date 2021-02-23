@@ -99,14 +99,13 @@ def main():
         config = yaml.load(f, Loader=yaml.Loader)
     config.update(vars(args))
 
-    if config["format"] == "npy":
-        char_query = "*-ids.npy"
-        mel_query = "*-raw-feats.npy" if args.use_norm is False else "*-norm-feats.npy"
-        char_load_fn = np.load
-        mel_load_fn = np.load
-    else:
+    if config["format"] != "npy":
         raise ValueError("Only npy is supported.")
 
+    char_query = "*-ids.npy"
+    mel_query = "*-raw-feats.npy" if args.use_norm is False else "*-norm-feats.npy"
+    char_load_fn = np.load
+    mel_load_fn = np.load
     # define data-loader
     dataset = CharactorMelDataset(
         root_dir=args.rootdir,

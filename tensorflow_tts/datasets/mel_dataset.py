@@ -86,10 +86,7 @@ class MelDataset(AbstractDataset):
             mel_file = self.mel_files[i]
             mel = self.mel_load_fn(mel_file)
             mel_length = self.mel_lengths[i]
-            if self.return_utt_id:
-                items = utt_id, mel, mel_length
-            else:
-                items = mel, mel_length
+            items = (utt_id, mel, mel_length) if self.return_utt_id else (mel, mel_length)
             yield items
 
     def get_output_dtypes(self):

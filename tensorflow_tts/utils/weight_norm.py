@@ -176,8 +176,7 @@ class WeightNormalization(tf.keras.layers.Wrapper):
             self.initialized.assign(True)
 
         self._compute_weights()
-        output = self.layer(inputs)
-        return output
+        return self.layer(inputs)
 
     def compute_output_shape(self, input_shape):
         return tf.TensorShape(self.layer.compute_output_shape(input_shape).as_list())

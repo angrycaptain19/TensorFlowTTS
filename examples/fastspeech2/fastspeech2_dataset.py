@@ -45,8 +45,7 @@ def average_by_duration(x, durs):
     input_signature=[tf.TensorSpec(None, tf.float32), tf.TensorSpec(None, tf.int32)]
 )
 def tf_average_by_duration(x, durs):
-    outs = tf.numpy_function(average_by_duration, [x, durs], tf.float32)
-    return outs
+    return tf.numpy_function(average_by_duration, [x, durs], tf.float32)
 
 
 class CharactorDurationF0EnergyMelDataset(AbstractDataset):

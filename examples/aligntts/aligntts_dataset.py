@@ -90,9 +90,7 @@ class LJSpeechDataset(AbstractDataset):
         return datasets
 
     def get_output_dtypes(self):
-        output_types = (tf.int32, tf.float32,
-                        tf.int32, tf.int32, tf.int32)
-        return output_types
+        return tf.int32, tf.float32, tf.int32, tf.int32, tf.int32
 
     def get_len_dataset(self):
         return len(self.mel_files)

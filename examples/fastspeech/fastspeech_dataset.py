@@ -342,10 +342,7 @@ class CharactorDataset(AbstractDataset):
         for i, utt_id in enumerate(utt_ids):
             charactor_file = self.charactor_files[i]
             charactor = self.charactor_load_fn(charactor_file)
-            if self.return_utt_id:
-                items = utt_id, charactor
-            else:
-                items = charactor
+            items = (utt_id, charactor) if self.return_utt_id else charactor
             yield items
 
     def create(

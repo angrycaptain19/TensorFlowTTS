@@ -28,10 +28,9 @@ def remove_outlier(x):
     p25 = np.percentile(x, 25)
     p75 = np.percentile(x, 75)
 
-    indices_of_outliers = []
-    for ind, value in enumerate(x):
-        if is_outlier(value, p25, p75):
-            indices_of_outliers.append(ind)
+    indices_of_outliers = [
+        ind for ind, value in enumerate(x) if is_outlier(value, p25, p75)
+    ]
 
     x[indices_of_outliers] = 0.0
 

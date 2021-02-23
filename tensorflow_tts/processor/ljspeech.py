@@ -126,9 +126,9 @@ class LJSpeechProcessor(object):
         self.root_path = root_path
         self.cleaner_names = cleaner_names
 
-        items = []
         self.speaker_name = "ljspeech"
         if root_path is not None:
+            items = []
             with open(os.path.join(root_path, "metadata.csv"), encoding="utf-8") as ttf:
                 for line in ttf:
                     parts = line.strip().split("|")
@@ -148,7 +148,7 @@ class LJSpeechProcessor(object):
         # convert text to ids
         text_ids = np.asarray(self.text_to_sequence(text), np.int32)
 
-        sample = {
+        return {
             "raw_text": text,
             "text_ids": text_ids,
             "audio": audio,
@@ -156,8 +156,6 @@ class LJSpeechProcessor(object):
             "speaker_name": speaker_name,
             "rate": rate,
         }
-
-        return sample
 
     def text_to_sequence(self, text):
         global _symbol_to_id

@@ -113,10 +113,7 @@ class AudioMelDataset(AbstractDataset):
             mel_file = self.mel_files[i]
             audio = self.audio_load_fn(audio_file)  # [T]
             mel = self.mel_load_fn(mel_file)
-            if self.return_utt_id:
-                items = utt_id, audio, mel
-            else:
-                items = audio, mel
+            items = (utt_id, audio, mel) if self.return_utt_id else (audio, mel)
             yield items
 
     def get_output_dtypes(self):
