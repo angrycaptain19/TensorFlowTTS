@@ -333,9 +333,9 @@ class Conv(Layer):
 
     def compute_output_shape(self, input_shape):
         input_shape = tensor_shape.TensorShape(input_shape).as_list()
+        new_space = []
         if self.data_format == "channels_last":
             space = input_shape[1:-1]
-            new_space = []
             for i in range(len(space)):
                 new_dim = conv_utils.conv_output_length(
                     space[i],
@@ -350,7 +350,6 @@ class Conv(Layer):
             )
         else:
             space = input_shape[2:]
-            new_space = []
             for i in range(len(space)):
                 new_dim = conv_utils.conv_output_length(
                     space[i],
@@ -388,10 +387,9 @@ class Conv(Layer):
         """Calculates padding for 'causal' option for 1-d conv layers."""
         left_pad = self.dilation_rate[0] * (self.kernel_size[0] - 1)
         if self.data_format == "channels_last":
-            causal_padding = [[0, 0], [left_pad, 0], [0, 0]]
+            return [[0, 0], [left_pad, 0], [0, 0]]
         else:
-            causal_padding = [[0, 0], [0, 0], [left_pad, 0]]
-        return causal_padding
+            return [[0, 0], [0, 0], [left_pad, 0]]
 
     def _get_channel_axis(self):
         if self.data_format == "channels_first":
@@ -409,10 +407,7 @@ class Conv(Layer):
         return int(input_shape[channel_axis])
 
     def _get_padding_op(self):
-        if self.padding == "causal":
-            op_padding = "valid"
-        else:
-            op_padding = self.padding
+        op_padding = "valid" if self.padding == "causal" else self.padding
         if not isinstance(op_padding, (list, tuple)):
             op_padding = op_padding.upper()
         return op_padding
@@ -428,14 +423,11 @@ class Conv(Layer):
           `True` or `False` to indicate whether to recreate the conv_op.
         """
         call_input_shape = inputs.get_shape()
-        for axis in range(1, len(call_input_shape)):
-            if (
+        return any((
                 call_input_shape[axis] is not None
                 and self._build_conv_op_input_shape[axis] is not None
                 and call_input_shape[axis] != self._build_conv_op_input_shape[axis]
-            ):
-                return True
-        return False
+            ) for axis in range(1, len(call_input_shape)))
 
 
 class GroupConv1D(Conv):

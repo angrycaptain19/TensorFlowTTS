@@ -89,14 +89,13 @@ def main():
         os.makedirs(args.outdir)
 
     # get dataset
-    if config["format"] == "npy":
-        mel_query = "*-raw-feats.npy"
-        f0_query = "*-raw-f0.npy"
-        energy_query = "*-raw-energy.npy"
-        mel_load_fn = np.load
-    else:
+    if config["format"] != "npy":
         raise ValueError("Support only npy format.")
 
+    mel_query = "*-raw-feats.npy"
+    f0_query = "*-raw-f0.npy"
+    energy_query = "*-raw-energy.npy"
+    mel_load_fn = np.load
     dataset = MelDataset(
         args.rootdir, mel_query=mel_query, mel_load_fn=mel_load_fn
     ).create(batch_size=1)

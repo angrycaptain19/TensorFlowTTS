@@ -270,44 +270,43 @@ def main():
             )
 
         # save
-        if config["format"] == "npy":
-            if idx in idx_train:
-                subdir = "train"
-            elif idx in idx_valid:
-                subdir = "valid"
-
-            np.save(
-                os.path.join(args.outdir, subdir, "wavs", f"{utt_id}-wave.npy"),
-                audio.astype(np.float32),
-                allow_pickle=False,
-            )
-            np.save(
-                os.path.join(
-                    args.outdir, subdir, "raw-feats", f"{utt_id}-raw-feats.npy"
-                ),
-                mel.astype(np.float32),
-                allow_pickle=False,
-            )
-            np.save(
-                os.path.join(args.outdir, subdir, "ids", f"{utt_id}-ids.npy"),
-                text_ids.astype(np.int32),
-                allow_pickle=False,
-            )
-            np.save(
-                os.path.join(args.outdir, subdir, "raw-f0", f"{utt_id}-raw-f0.npy"),
-                f0.astype(np.float32),
-                allow_pickle=False,
-            )
-            np.save(
-                os.path.join(
-                    args.outdir, subdir, "raw-energies", f"{utt_id}-raw-energy.npy"
-                ),
-                energy.astype(np.float32),
-                allow_pickle=False,
-            )
-        else:
+        if config["format"] != "npy":
             raise ValueError("support only npy format.")
 
+        if idx in idx_train:
+            subdir = "train"
+        elif idx in idx_valid:
+            subdir = "valid"
+
+        np.save(
+            os.path.join(args.outdir, subdir, "wavs", f"{utt_id}-wave.npy"),
+            audio.astype(np.float32),
+            allow_pickle=False,
+        )
+        np.save(
+            os.path.join(
+                args.outdir, subdir, "raw-feats", f"{utt_id}-raw-feats.npy"
+            ),
+            mel.astype(np.float32),
+            allow_pickle=False,
+        )
+        np.save(
+            os.path.join(args.outdir, subdir, "ids", f"{utt_id}-ids.npy"),
+            text_ids.astype(np.int32),
+            allow_pickle=False,
+        )
+        np.save(
+            os.path.join(args.outdir, subdir, "raw-f0", f"{utt_id}-raw-f0.npy"),
+            f0.astype(np.float32),
+            allow_pickle=False,
+        )
+        np.save(
+            os.path.join(
+                args.outdir, subdir, "raw-energies", f"{utt_id}-raw-energy.npy"
+            ),
+            energy.astype(np.float32),
+            allow_pickle=False,
+        )
         pbar.update(1)
 
     # apply multi-processing Pool

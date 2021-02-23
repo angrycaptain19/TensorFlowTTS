@@ -389,11 +389,7 @@ class TFTacotronLocationSensitiveAttention(BahdanauAttention):
 
         alignments = self.probability_fn(energy, state)
 
-        if self.is_cumulate:
-            state = alignments + state
-        else:
-            state = alignments
-
+        state = alignments + state if self.is_cumulate else alignments
         expanded_alignments = tf.expand_dims(alignments, 2)
         context = tf.reduce_sum(expanded_alignments * self.values, 1)
 

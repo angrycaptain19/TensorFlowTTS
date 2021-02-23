@@ -128,15 +128,14 @@ def dynamic_decode(
         def _shape(batch_size, from_shape):
             if not isinstance(from_shape, tf.TensorShape) or from_shape.ndims == 0:
                 return None
-            else:
-                batch_size = tf.get_static_value(
-                    tf.convert_to_tensor(batch_size, name="batch_size")
-                )
-                if enable_tflite_convertible:
-                    # Since we can't use 2-D TensoArray and assume `batch_size` = 1,
-                    # we use `from_shape` dimension only.
-                    return from_shape
-                return tf.TensorShape([batch_size]).concatenate(from_shape)
+            batch_size = tf.get_static_value(
+                tf.convert_to_tensor(batch_size, name="batch_size")
+            )
+            if enable_tflite_convertible:
+                # Since we can't use 2-D TensoArray and assume `batch_size` = 1,
+                # we use `from_shape` dimension only.
+                return from_shape
+            return tf.TensorShape([batch_size]).concatenate(from_shape)
 
         dynamic_size = maximum_iterations is None or not is_xla
         # The dynamic shape `TensoArray` is not allowed in TFLite yet.
@@ -212,13 +211,13 @@ def dynamic_decode(
             if impute_finished:
 
                 def zero_out_finished(out, zero):
-                    if finished.shape.rank < zero.shape.rank:
-                        broadcast_finished = tf.broadcast_to(
-                            tf.expand_dims(finished, axis=-1), zero.shape
-                        )
-                        return tf.where(broadcast_finished, zero, out)
-                    else:
+                    if finished.shape.rank >= zero.shape.rank:
                         return tf.where(finished, zero, out)
+
+                    broadcast_finished = tf.broadcast_to(
+                        tf.expand_dims(finished, axis=-1), zero.shape
+                    )
+                    return tf.where(broadcast_finished, zero, out)
 
                 emit = tf.nest.map_structure(
                     zero_out_finished, next_outputs, zero_outputs
@@ -234,13 +233,13 @@ def dynamic_decode(
                 else:
                     new.set_shape(cur.shape)
                     pass_through = new.shape.ndims == 0
-                if not pass_through:
-                    broadcast_finished = tf.broadcast_to(
-                        tf.expand_dims(finished, axis=-1), new.shape
-                    )
-                    return tf.where(broadcast_finished, cur, new)
-                else:
+                if pass_through:
                     return new
+
+                broadcast_finished = tf.broadcast_to(
+                    tf.expand_dims(finished, axis=-1), new.shape
+                )
+                return tf.where(broadcast_finished, cur, new)
 
             if impute_finished:
                 next_state = tf.nest.map_structure(
